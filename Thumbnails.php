@@ -4,7 +4,7 @@
  * Create thumbnails for a given image.
  *
  * @author Carlos Sosa
- * @version 0.1 
+ * @version 1.0 
  * 
  * @method Thumbnails   saveAsPng           ( $imagePath)   Save thumbnail as png into path
  * @method Thumbnails   saveAsJpeg          ( $imagePath)   Save thumbnail as png into path
@@ -90,7 +90,7 @@ class Thumbnails {
     }
     
     /**
-     * Set options to use always do make thumbnail.
+     * Configure settings to use whenever you make thumbnails.
      * 
      * Example:
      * <pre><code>

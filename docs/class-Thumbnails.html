@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="ApiGen 2.8.0" />
+
+	<title>Class Thumbnails | Thumbnails</title>
+
+	<script type="text/javascript" src="resources/combined.js?1951307471"></script>
+	<script type="text/javascript" src="elementlist.js?1314914194"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3505392360" />
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li class="active"><a href="namespace-None.html">None</a>
+						</li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr />
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-Thumbnails.html">Thumbnails</a></li>
+			</ul>
+
+
+
+			<h3>Exceptions</h3>
+			<ul>
+				<li><a href="class-Thumbnails_Exception_ErrorToLoad.html">Thumbnails_Exception_ErrorToLoad</a></li>
+				<li><a href="class-Thumbnails_Exception_FileNotFound.html">Thumbnails_Exception_FileNotFound</a></li>
+				<li><a href="class-Thumbnails_Exception_FormatNotSupported.html">Thumbnails_Exception_FormatNotSupported</a></li>
+				<li><a href="class-Thumbnails_Exception_NotCallableMethod.html">Thumbnails_Exception_NotCallableMethod</a></li>
+			</ul>
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="" />
+		<input type="hidden" name="ie" value="UTF-8" />
+		<input type="text" name="q" class="text" />
+		<input type="submit" value="Search" />
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-None.html" title="Summary of None"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Thumbnails</h1>
+
+
+	<div class="description">
+	
+<p>Thumbnails: Create thumbnails for a given image.</p>
+
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		
+		
+
+				<b>Author:</b>
+				Carlos Sosa<br />
+				<b>Version:</b>
+				0.1<br />
+		<b>Located at</b> <a href="source-class-Thumbnails.html#2-380" title="Go to source code">Thumbnails.php</a><br />
+	</div>
+
+
+
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-Thumbnails.html#54-90" title="Go to source code">__construct</a>( <span>string <var>$imagePath</var></span>, <span>string <var>$format</var> = <span class="php-quote">'auto'</span></span>, <span>string <var>$resize_function</var> = <code><a href="class-Thumbnails.html#RESIZE_RESAMPLING">Thumbnails::<b>RESIZE_RESAMPLING</b></a></code></span> )</code>
+
+		<div class="description short">
+			
+<p>Create instance of Thumbnails</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Create instance of Thumbnails</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$imagePath</var></dt>
+					<dd><code>string</code><br>$imagePath Path to image (any path supported by fopen)</dd>
+					<dt><var>$format</var></dt>
+					<dd><code>string</code><br>$format Force to use specific format to load the image, by default is 'auto' for
+try autodetect format by extension.</dd>
+					<dt><var>$resize_function</var></dt>
+					<dd><code>string</code><br>$resize_function Set the function to resize.</dd>
+				</dl></div>
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails_Exception_FileNotFound.html">Thumbnails_Exception_FileNotFound</a></code></code><br />
+					<code><code><a href="class-Thumbnails_Exception_FormatNotSupported.html">Thumbnails_Exception_FormatNotSupported</a></code></code><br />
+					<code><code><a href="class-Thumbnails_Exception_ErrorToLoad.html">Thumbnails_Exception_ErrorToLoad</a></code></code><br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setThumbnailDefaultOptions" id="_setThumbnailDefaultOptions">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-Thumbnails.html">Thumbnails</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setThumbnailDefaultOptions">#</a>
+		<code><a href="source-class-Thumbnails.html#92-116" title="Go to source code">setThumbnailDefaultOptions</a>( <span>type <var>$options</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Configure settings to use whenever you make thumbnails.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Configure settings to use whenever you make thumbnails.</p>
+
+<p>Example:</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+  $obj = new Thumbnails(&quot;/var/www/image.jpg&quot;);
+  $obj-&gt;setThumbnailDefaultOptions(Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP | Thumbnails::IMAGE_POS_RIGHT)
+      -&gt;doThumbnail(100,20)
+      -&gt;save('/var/www/image_min.png')
+      -&gt;doThumbnail(200,40)
+      -&gt;save('/var/www/image_med.png')
+      -&gt;doThumbnail(400,80)
+      -&gt;save('/var/www/image_big.png');
+?&gt;
+&lt;/code&gt;</pre>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$options</var></dt>
+					<dd><code>type</code><br>$options Position of selection in Original Image</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails.html">Thumbnails</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setMethodToResize" id="_setMethodToResize">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-Thumbnails.html">Thumbnails</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setMethodToResize">#</a>
+		<code><a href="source-class-Thumbnails.html#118-131" title="Go to source code">setMethodToResize</a>( <span>type <var>$method</var> = <code><a href="class-Thumbnails.html#RESIZE_RESAMPLING">Thumbnails::<b>RESIZE_RESAMPLING</b></a></code></span> )</code>
+
+		<div class="description short">
+			
+<p>setMethodToResize</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>setMethodToResize</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$method</var></dt>
+					<dd><code>type</code><br>$method Function name to use when for resize the image.</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails.html">Thumbnails</a></code></code><br />
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails_Exception_NotCallableMethod.html">Thumbnails_Exception_NotCallableMethod</a></code></code><br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="doThumbnail" id="_doThumbnail">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_doThumbnail">#</a>
+		<code><a href="source-class-Thumbnails.html#133-225" title="Go to source code">doThumbnail</a>( <span>type <var>$thumb_w</var></span>, <span>type <var>$thumb_h</var></span>, <span>type <var>$options</var> = <code><a href="class-Thumbnails.html#IMAGE_CENTER">Thumbnails::<b>IMAGE_CENTER</b></a></code></span>, <span>mixed <var>$bg_color</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			
+<p>Make a thumbnail for Loaded Image</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Make a thumbnail for Loaded Image</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$thumb_w</var></dt>
+					<dd><code>type</code><br>$thumb_w Thumbnail Width</dd>
+					<dt><var>$thumb_h</var></dt>
+					<dd><code>type</code><br>$thumb_h Thumbnail Height</dd>
+					<dt><var>$options</var></dt>
+					<dd><code>type</code><br>$options Position of selection in Original Image</dd>
+					<dt><var>$bg_color</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="save" id="_save">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_save">#</a>
+		<code><a href="source-class-Thumbnails.html#227-267" title="Go to source code">save</a>( <span>type <var>$path</var></span>, <span>type <var>$format</var> = <span class="php-quote">'auto'</span></span>, <span>mixed <var>$overwrite</var> = <span class="php-keyword1">true</span></span> )</code>
+
+		<div class="description short">
+			
+<p>Save thumbnail</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Save thumbnail</p>
+
+<p>Example:</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+  $obj = new Thumbnails(&quot;/var/www/image.jpg&quot;);
+  $obj-&gt;doThumbnail(60, 60, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP | Thumbnails::IMAGE_POS_RIGHT)
+      -&gt;saveAsJpeg(&quot;/var/www/image_thumb.jpg&quot;)
+?&gt;
+&lt;/code&gt;</pre>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$path</var></dt>
+					<dd><code>type</code><br>$path</dd>
+					<dt><var>$format</var></dt>
+					<dd><code>type</code><br>$format</dd>
+					<dt><var>$overwrite</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails_Exception_FileNotFound.html">Thumbnails_Exception_FileNotFound</a></code></code><br />
+					<code><code><a href="class-Thumbnails_Exception_FormatNotSupported.html">Thumbnails_Exception_FormatNotSupported</a></code></code><br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getThumbnailAsString" id="_getThumbnailAsString">
+
+		<td class="attributes"><code>
+			 public 
+			type
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getThumbnailAsString">#</a>
+		<code><a href="source-class-Thumbnails.html#269-291" title="Go to source code">getThumbnailAsString</a>( <span>type <var>$format</var> = <code><a href="class-Thumbnails.html#IMAGE_FORMAT_PNG">Thumbnails::<b>IMAGE_FORMAT_PNG</b></a></code></span> )</code>
+
+		<div class="description short">
+			
+<p>getThumbnailAsString Store thumbnails into string</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>getThumbnailAsString Store thumbnails into string</p>
+
+<p>Example:</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+  $obj = new Thumbnails(&quot;/var/www/image.jpg&quot;);
+  $obj-&gt;doThumbnail(60, 60);
+
+  echo &quot;My image thumbnail : &quot;;
+  echo '&lt;img src=&quot;data:image/png;base64,'. base64_encode($obj-&gt;getThumbnailAsString(Thumbnails::IMAGE_FORMAT_PNG)) .'&quot;&gt;';
+?&gt;
+&lt;/code&gt;</pre>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$format</var></dt>
+					<dd><code>type</code><br>$format</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>type</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="printThumbnail" id="_printThumbnail">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_printThumbnail">#</a>
+		<code><a href="source-class-Thumbnails.html#293-318" title="Go to source code">printThumbnail</a>( <span>string <var>$format</var> = <code><a href="class-Thumbnails.html#IMAGE_FORMAT_PNG">Thumbnails::<b>IMAGE_FORMAT_PNG</b></a></code></span> )</code>
+
+		<div class="description short">
+			
+<p>printThumbnail</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>printThumbnail</p>
+
+<p>Example:</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+  $obj = new Thumbnails(&quot;/var/www/image.jpg&quot;);
+  $obj-&gt;doThumbnail(60, 60);
+
+  header(&quot;Pragma: public&quot;);
+  header('Content-disposition: filename=image_thumb.png');
+  header(&quot;Content-type: image/png&quot;);
+  header('Content-Transfer-Encoding: binary');
+  ob_clean();
+  flush();
+  //You can used simplified method
+  //or $obj-&gt;printThumbnail(Thumbnails::IMAGE_FORMAT_PNG);
+  $obj-&gt;printThumbnailAsPng();
+?&gt;
+&lt;/code&gt;</pre>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$format</var></dt>
+					<dd><code>string</code><br>$format Format to use for generate the thumbnail</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="createThumb" id="_createThumb">
+
+		<td class="attributes"><code>
+			 public static
+			<code><a href="class-Thumbnails.html">Thumbnails</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_createThumb">#</a>
+		<code><a href="source-class-Thumbnails.html#331-379" title="Go to source code">createThumb</a>( <span>type <var>$imgPath</var></span>, <span>type <var>$thumbPath</var></span>, <span>type <var>$thumb_w</var></span>, <span>type <var>$thumb_h</var></span>, <span>type <var>$options</var> = <code><a href="class-Thumbnails.html#IMAGE_CENTER">Thumbnails::<b>IMAGE_CENTER</b></a></code></span>, <span>type <var>$format</var> = <span class="php-quote">'auto'</span></span>, <span>mixed <var>$bg_color</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			
+<p>createThumb</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>createThumb</p>
+
+<p>Example: Generate a thumbnail from image, if aspect ratio of both images is
+not equal then select area from top right corner.</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+Thumbnails::createThumb( '/path/to/big_img.png', '/path/to/thumb_big_img.gif', 60, 60, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP | Thumbnails::IMAGE_POS_RIGHT, Thumbnails::IMAGE_FORMAT_GIF );
+?&gt;
+&lt;/code&gt;</pre>
+
+<p>Example: Generate a thumbnails save and show.</p>
+
+<pre>&lt;code&gt;
+&lt;?php
+ require 'Thumbnails.php';
+ $obj = Thumbnails::createThumb('img.jpg', 'th.jpg', 350,350, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP , Thumbnails::IMAGE_FORMAT_PNG);
+ header(&quot;Pragma: public&quot;);
+ header('Content-disposition: filename=image_thumb.png');
+ header(&quot;Content-type: image/png&quot;);
+ header('Content-Transfer-Encoding: binary');
+ ob_clean();
+ flush();
+ $obj-&gt;printThumbnailAsPng();
+?&gt;
+* &lt;/code&gt;</pre>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$imgPath</var></dt>
+					<dd><code>type</code><br>$imgPath Full path to Orignal Image</dd>
+					<dt><var>$thumbPath</var></dt>
+					<dd><code>type</code><br>$thumbPath Full to store Thumbnail</dd>
+					<dt><var>$thumb_w</var></dt>
+					<dd><code>type</code><br>$thumb_w Thumbnail Width</dd>
+					<dt><var>$thumb_h</var></dt>
+					<dd><code>type</code><br>$thumb_h Thumbnail Height</dd>
+					<dt><var>$options</var></dt>
+					<dd><code>type</code><br>$options Position of selection in Original Image</dd>
+					<dt><var>$format</var></dt>
+					<dd><code>type</code><br>$format Format for Generated Thumbnail</dd>
+					<dt><var>$bg_color</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-Thumbnails.html">Thumbnails</a></code></code><br>Return object used to make the thumbnail.<br />
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					<code><code><a href="class-Exception.html">Exception</a></code></code><br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+	<table class="summary" id="constants">
+	<caption>Constants summary</caption>
+	<tr data-order="IMAGE_STRETCH" id="IMAGE_STRETCH">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#26" title="Go to source code"><b>IMAGE_STRETCH</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">1</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_STRETCH" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_CENTER" id="IMAGE_CENTER">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#27" title="Go to source code"><b>IMAGE_CENTER</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">2</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_CENTER" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_POS_TOP" id="IMAGE_POS_TOP">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#28" title="Go to source code"><b>IMAGE_POS_TOP</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">4</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_POS_TOP" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_POS_BOTTOM" id="IMAGE_POS_BOTTOM">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#29" title="Go to source code"><b>IMAGE_POS_BOTTOM</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">8</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_POS_BOTTOM" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_POS_LEFT" id="IMAGE_POS_LEFT">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#30" title="Go to source code"><b>IMAGE_POS_LEFT</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">16</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_POS_LEFT" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_POS_RIGHT" id="IMAGE_POS_RIGHT">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#31" title="Go to source code"><b>IMAGE_POS_RIGHT</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">32</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_POS_RIGHT" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_TOUCH_OUTSIDE" id="IMAGE_TOUCH_OUTSIDE">
+
+		<td class="attributes"><code>integer</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#32" title="Go to source code"><b>IMAGE_TOUCH_OUTSIDE</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-num">64</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_TOUCH_OUTSIDE" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="RESIZE_RESIZE" id="RESIZE_RESIZE">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#35" title="Go to source code"><b>RESIZE_RESIZE</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'imagecopyresized'</span></code></td>
+		<td class="description"><div>
+			<a href="#RESIZE_RESIZE" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="RESIZE_RESAMPLING" id="RESIZE_RESAMPLING">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#36" title="Go to source code"><b>RESIZE_RESAMPLING</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'imagecopyresampled'</span></code></td>
+		<td class="description"><div>
+			<a href="#RESIZE_RESAMPLING" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_JPEG" id="IMAGE_FORMAT_JPEG">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#39" title="Go to source code"><b>IMAGE_FORMAT_JPEG</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'jpeg'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_JPEG" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_PNG" id="IMAGE_FORMAT_PNG">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#40" title="Go to source code"><b>IMAGE_FORMAT_PNG</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'png'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_PNG" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_GIF" id="IMAGE_FORMAT_GIF">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#41" title="Go to source code"><b>IMAGE_FORMAT_GIF</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'gif'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_GIF" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_GD" id="IMAGE_FORMAT_GD">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#42" title="Go to source code"><b>IMAGE_FORMAT_GD</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'gd'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_GD" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_GD2" id="IMAGE_FORMAT_GD2">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#43" title="Go to source code"><b>IMAGE_FORMAT_GD2</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'gd2'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_GD2" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="IMAGE_FORMAT_XBM" id="IMAGE_FORMAT_XBM">
+
+		<td class="attributes"><code>string</code></td>
+		<td class="name"><code>
+				<a href="source-class-Thumbnails.html#44" title="Go to source code"><b>IMAGE_FORMAT_XBM</b></a>
+		</code></td>
+		<td class="value"><code><span class="php-quote">'xbm'</span></code></td>
+		<td class="description"><div>
+			<a href="#IMAGE_FORMAT_XBM" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+	<table class="summary" id="properties">
+	<caption>Properties summary</caption>
+	<tr data-order="image" id="$image">
+		<td class="attributes"><code>
+			protected  
+			mixed
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Thumbnails.html#47" title="Go to source code"><var>$image</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$image" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="thumb" id="$thumb">
+		<td class="attributes"><code>
+			protected  
+			mixed
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Thumbnails.html#49" title="Go to source code"><var>$thumb</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$thumb" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="thumb_options" id="$thumb_options">
+		<td class="attributes"><code>
+			protected  
+			mixed
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Thumbnails.html#50" title="Go to source code"><var>$thumb_options</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$thumb_options" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	<tr data-order="resize_method" id="$resize_method">
+		<td class="attributes"><code>
+			protected  
+			mixed
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-Thumbnails.html#52" title="Go to source code"><var>$resize_method</var></a>
+		</td>
+		<td class="value"><code></code></td>
+		<td class="description"><div>
+			<a href="#$resize_method" class="anchor">#</a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		Thumbnails API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+</body>
+</html>
