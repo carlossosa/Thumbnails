@@ -89,6 +89,12 @@ class Thumbnails {
         $this->setMethodToResize($resize_function);
     }
     
+    public function __destruct() {
+        imagedestroy($this->image);
+        if ( is_resource($this->thumb) )
+            imagedestroy ($this->thumb);
+    }
+    
     /**
      * Configure settings to use whenever you make thumbnails.
      * 
@@ -210,7 +216,7 @@ class Thumbnails {
         
         //Create blank image
         if ( $this->thumb)            
-            $this->thumb = NULL;
+            imagedestroy ($this->thumb);
         $this->thumb = imagecreatetruecolor($thumb_w, $thumb_h);
         
         if ( is_array($bg_color)) {            
