@@ -29,10 +29,11 @@ class Thumbnails {
     const IMAGE_POS_BOTTOM = 8;
     const IMAGE_POS_LEFT = 16;
     const IMAGE_POS_RIGHT = 32;
+    const IMAGE_TOUCH_OUTSIDE = 64;
     
     //Method to use for resize
     const RESIZE_RESIZE = 'imagecopyresized';
-    const RESIZE_RESAMPLING = 'imagecopyresampled ';
+    const RESIZE_RESAMPLING = 'imagecopyresampled';
     
     //Supported formats (GD 1.8 & PHP 5.4.4)
     const IMAGE_FORMAT_JPEG = 'jpeg';
@@ -67,7 +68,7 @@ class Thumbnails {
                
         //prepare the extension
         $ext = ( strtolower($format) != 'auto' ) ? strtolower($format) : 
-                                                    strtolower(pathinfo($imgPath, PATHINFO_EXTENSION));
+                                                    strtolower(pathinfo($imagePath, PATHINFO_EXTENSION));
         $ext = ( $ext == 'jpg' ) ? self::IMAGE_FORMAT_JPEG : $ext;
         
         $func = 'imagecreatefrom'.$ext;
@@ -78,14 +79,14 @@ class Thumbnails {
         }
         
         //Load image
-        $this->image = $func($imgPath);
+        $this->image = $func($imagePath);
         
         //Check if loaded
         if ( !is_resource($this->image))
             throw new Thumbnails_Exception_ErrorToLoad($imagePath);
         
         $this->thumb_options = NULL;  
-        $this->setMethodToResize();
+        $this->setMethodToResize($resize_function);
     }
     
     /**
@@ -122,7 +123,7 @@ class Thumbnails {
      * @throws Thumbnails_Exception_NotCallableMethod
      */
     public function setMethodToResize( $method = self::RESIZE_RESAMPLING) {
-        if (is_callable($method))
+        if (!is_callable($method))
             throw new Thumbnails_Exception_NotCallableMethod($method);
             
         $this->resize_method = $method;        
@@ -137,7 +138,8 @@ class Thumbnails {
      * @param type $options     Position of selection in Original Image
      */
     public function doThumbnail (   $thumb_w, $thumb_h, 
-                                    $options = self::IMAGE_CENTER )  {   
+                                    $options = self::IMAGE_CENTER,
+                                    $bg_color = null)  {   
         //Options
         if ( $this->thumb_options !== NULL )
             $options = $this->thumb_options;
@@ -148,42 +150,76 @@ class Thumbnails {
         //Calc image ratios
         $img_r = $img_w / $img_h;
         $thumb_r = $thumb_w / $thumb_h;        
-        //Calc sizes
-        $O_h = ( $options % 2 != 0 ) ? $img_w : $img_w / $thumb_r;
-        $O_w = $img_w;
-        //Correct sizes
-        if ( $img_r > $thumb_r){
-            $O_h_diff = $O_h-$img_h;
+        
+        if (( $options & self::IMAGE_CENTER ) && ( $options & self::IMAGE_TOUCH_OUTSIDE )) {
             $O_h = $img_h;
-            $O_w = $O_w - ($O_h_diff * $thumb_r);
-        } 
-        //X,Y Pos in Image
-        //By default is aligned to left and top.
-        $O_x = $O_y = 0;
-        if ($options % 2 == 0) { //If not stretch then calc Pos
-            if ( $O_w < $img_w ) { //x
-                if ( ( $options & self::IMAGE_POS_RIGHT ) ) {
-                    $O_x = ($img_w - $O_w);
-                } else if ( !( $options & self::IMAGE_POS_LEFT ) ) //center
-                    $O_x = ($img_w - $O_w) / 2;                
-            }//x 
-            
-            if ($O_h < $img_h) { //y
-                if ( ( $options & self::IMAGE_POS_BOTTOM ) ) {
-                    $O_y = ($img_h - $O_h);
-                } else if ( !( $options & self::IMAGE_POS_TOP ) )
-                    $O_y = ($img_h - $O_h) / 2;                                
-            }//y
-        }//center
+            $O_w = $img_w;
+            $O_x = $O_y = 0;
+            $T_w = $thumb_w;
+            $T_h = $thumb_h;
+            $T_x = $T_y = 0;
+            if ($img_r < $thumb_r) { //mov horizontal
+                $T_w = $thumb_h * $img_r;
+                $T_x = 0;
+                
+                if (( $options & self::IMAGE_POS_RIGHT)) {
+                    $T_x = $thumb_w - $T_w;
+                } else if (!( $options & self::IMAGE_POS_LEFT )) //center
+                    $T_x = ($thumb_w - $T_w)/2;
+            } else { //mov vertical
+                $T_h = $thumb_w / $img_r;
+                $T_y = 0;
+                
+                if (( $options & self::IMAGE_POS_BOTTOM)) {
+                    $T_y = $thumb_h - $T_h;
+                } else if (!( $options & self::IMAGE_POS_TOP ))
+                    $T_y = ($thumb_h - $T_h)/2;
+            }
+        } else {
+            $T_w = $thumb_w;
+            $T_h = $thumb_h;
+            $T_x = $T_y = 0;
+            //Calc sizes
+            $O_h = ( $options % 2 != 0 ) ? $img_w : $img_w / $thumb_r;
+            $O_w = $img_w;
+            //Correct sizes
+            if ($img_r > $thumb_r) {
+                $O_h_diff = $O_h - $img_h;
+                $O_h = $img_h;
+                $O_w = $O_w - ($O_h_diff * $thumb_r);
+            }
+            //X,Y Pos in Image
+            //By default is aligned to left and top.
+            $O_x = $O_y = 0;
+            if ($options % 2 == 0) { //If not stretch then calc Pos
+                if ($O_w < $img_w) { //x
+                    if (( $options & self::IMAGE_POS_RIGHT)) {
+                        $O_x = ($img_w - $O_w);
+                    } else if (!( $options & self::IMAGE_POS_LEFT )) //center
+                        $O_x = ($img_w - $O_w) / 2;
+                }//x 
+
+                if ($O_h < $img_h) { //y
+                    if (( $options & self::IMAGE_POS_BOTTOM)) {
+                        $O_y = ($img_h - $O_h);
+                    } else if (!( $options & self::IMAGE_POS_TOP ))
+                        $O_y = ($img_h - $O_h) / 2;
+                }//y
+            }//center
+        }
         
         //Create blank image
         if ( $this->thumb)            
             $this->thumb = NULL;
         $this->thumb = imagecreatetruecolor($thumb_w, $thumb_h);
         
+        if ( is_array($bg_color)) {            
+            imagefill($this->thumb, 0, 0, imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']));
+        }
+        
         //Copy and resize the Big image into Thumbnail
         //imagecopyresampled( $this->thumb, $this->image, 0, 0, $O_x, $O_y, $thumb_w, $thumb_h, $O_w, $O_h);        
-        call_user_func( $this->resize_method, $this->thumb, $this->image, 0, 0, $O_x, $O_y, $thumb_w, $thumb_h, $O_w, $O_h);        
+        call_user_func($this->resize_method,$this->thumb, $this->image, $T_x, $T_y, $O_x, $O_y, $T_w, $T_h, $O_w, $O_h);        
         
         return $this;       
     }
@@ -205,14 +241,10 @@ class Thumbnails {
      * @throws Thumbnails_Exception_FileNotFound
      * @throws Thumbnails_Exception_FormatNotSupported
      */
-    public function save( $path, $format='auto') {
-        //Verify writeable
-        if ( !file_exists( $imagePath))
-            throw new Thumbnails_Exception_FileNotFound($imagePath);
-               
+    public function save( $path, $format='auto', $overwrite = true) {
         //prepare the extension
         $ext = ( strtolower($format) != 'auto' ) ? strtolower($format) : 
-                                                    strtolower(pathinfo($imgPath, PATHINFO_EXTENSION));
+                                                    strtolower(pathinfo($path, PATHINFO_EXTENSION));
         $ext = ( $ext == 'jpg' ) ? self::IMAGE_FORMAT_JPEG : $ext;
         
         $func = 'image'.$ext;
@@ -222,8 +254,16 @@ class Thumbnails {
             throw new Thumbnails_Exception_FormatNotSupported($ext);
         }
         
+        if ( file_exists( $path) && $overwrite == false)
+            return $this;
+        else if ( file_exists( $path) ) {
+            unlink($path);
+        }
+        
         //Save thumbnail
-        $func_save($black_img,$thumbPath);
+        $func($this->thumb,$path);
+        
+        return $this;
     }
     
     /**
@@ -274,7 +314,7 @@ class Thumbnails {
      * @param string $format Format to use for generate the thumbnail
      */
     public function printThumbnail( $format = self::IMAGE_FORMAT_PNG) {
-        $this->save( NULL, 'png');
+        $this->save( NULL, $format);
     }
     
     /**
@@ -300,6 +340,22 @@ class Thumbnails {
      * ?>
      * </code></pre>
      * 
+     * Example:
+     * Generate a thumbnails save and show.
+     * <pre><code>
+     * <?php
+     *  require 'Thumbnails.php';
+     *  $obj = Thumbnails::createThumb('img.jpg', 'th.jpg', 350,350, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP , Thumbnails::IMAGE_FORMAT_PNG);
+     *  header("Pragma: public");
+     *  header('Content-disposition: filename=image_thumb.png');
+     *  header("Content-type: image/png");
+     *  header('Content-Transfer-Encoding: binary');
+     *  ob_clean();
+     *  flush();
+     *  $obj->printThumbnailAsPng();
+     * ?>
+     * * </code></pre>
+     * 
      * @param type $imgPath     Full path to Orignal Image
      * @param type $thumbPath   Full to store Thumbnail
      * @param type $thumb_w     Thumbnail Width
@@ -312,11 +368,11 @@ class Thumbnails {
     public static function createThumb (    $imgPath, $thumbPath, 
                                             $thumb_w, $thumb_h, 
                                             $options = self::IMAGE_CENTER, 
-                                            $format = 'auto')            
+                                            $format = 'auto',
+                                            $bg_color = null)            
     {
         $obj = new self($imgPath);
-        $obj->setThumbnailDefaultOptions($options)
-                ->doThumbnail($thumb_w, $thumb_h)
+        $obj->doThumbnail($thumb_w, $thumb_h, $options, $bg_color)
                 ->save($thumbPath,$format);
         
         return $obj;
