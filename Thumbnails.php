@@ -378,8 +378,9 @@ class Thumbnails {
                                             $bg_color = null)            
     {
         $obj = new self($imgPath);
-        $obj->doThumbnail($thumb_w, $thumb_h, $options, $bg_color)
-                ->save($thumbPath,$format);
+        $obj->doThumbnail($thumb_w, $thumb_h, $options, $bg_color);
+        if ( $thumbPath !== null)
+                $obj->save($thumbPath,$format);
         
         return $obj;
     }            
