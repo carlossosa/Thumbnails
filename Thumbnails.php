@@ -220,6 +220,7 @@ class Thumbnails {
             imagedestroy ($this->thumb);
         $this->thumb = imagecreatetruecolor($thumb_w, $thumb_h);
        
+        //TODO: Usar metodo getColor para asignar color.
         /**
          * Thanks to WaKeMaTTa! http://www.phpclasses.org/discuss/package/7899/thread/2/
          */
