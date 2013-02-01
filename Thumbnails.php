@@ -394,7 +394,48 @@ class Thumbnails {
                 $obj->save($thumbPath,$format);
         
         return $obj;
-    }            
+    }        
+    
+    /**
+     * Use for allocate color in image
+     * 
+     * @param mixed Array RGB Color, hex Color or Name of color
+     * @param GdImage $image
+     * @return int
+     */
+    public static function getColor( $str, $image) {
+        $func = 'imagecolorallocate';
+        $color = array(255,255,255);
+        
+        //colors
+        $colors = array(
+            'black' => '000',       'blue' => '00F',        'green' => '0F0',
+            'gray' => 'CCC',        'red' => 'F00',         'white' => 'FFF',
+            'darkblue' => '053368', 'skyblue' => '00CBFF',  'yellow' => 'FF0',
+            'violet' => '7B00FF',   'pink' => 'F0F',
+        );
+        
+        if (in_array($str, $colors))
+        {
+            return self::getColor($colors[$str], $image);
+        }
+        elseif (is_array($str)) {
+            if ( count($str) == 3)
+            {
+                $color = $str;
+            }
+        } else {
+            $_match = array();
+            if ( preg_match('#^([a-fA-F0-9]{1})([a-fA-F0-9]{1})([a-fA-F0-9]{1})$#', trim($str,' #'), $_match) ) {
+                    $_match[1] .= $_match[1];$_match[2] .= $_match[2];$_match[3] .= $_match[2];
+                    $color = array( base_convert($_match[1],16,10), base_convert($_match[2],16,10), base_convert($_match[3],16,10));
+            } elseif ( preg_match('#^([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$#', trim($str,' #'), $_match) ) {
+                    $color = array( base_convert($_match[1],16,10), base_convert($_match[2],16,10), base_convert($_match[3],16,10));
+            }            
+        }
+        array_unshift( $color, $image);
+        return call_user_func_array($func, $color);
+    }
 }
 
 final class Thumbnails_Exception_FileNotFound extends Exception {
