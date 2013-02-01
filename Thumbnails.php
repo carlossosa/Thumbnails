@@ -143,7 +143,7 @@ class Thumbnails {
      * @param type $thumb_h     Thumbnail Height
      * @param type $options     Position of selection in Original Image
      */
-    public function doThumbnail (   $thumb_w, $thumb_h,
+    public function doThumbnail (   $thumb_w, $thumb_h='auto',
                                     $options = self::IMAGE_CENTER,
                                     $bg_color = null)  {  
         //Options
@@ -155,6 +155,7 @@ class Thumbnails {
         $img_h = imagesy($this->image);
         //Calc image ratios
         $img_r = $img_w / $img_h;
+        if ($thumb_h == 'auto') { $thumb_h = $thumb_w / $img_r; } //thumbnail height proportional
         $thumb_r = $thumb_w / $thumb_h;        
        
         if (( $options & self::IMAGE_CENTER ) && ( $options & self::IMAGE_TOUCH_OUTSIDE )) {
