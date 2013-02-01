@@ -143,20 +143,20 @@ class Thumbnails {
      * @param type $thumb_h     Thumbnail Height
      * @param type $options     Position of selection in Original Image
      */
-    public function doThumbnail (   $thumb_w, $thumb_h, 
+    public function doThumbnail (   $thumb_w, $thumb_h,
                                     $options = self::IMAGE_CENTER,
-                                    $bg_color = null)  {   
+                                    $bg_color = null)  {  
         //Options
         if ( $this->thumb_options !== NULL )
             $options = $this->thumb_options;
-        
+       
         //Img sizes
         $img_w = imagesx($this->image);
         $img_h = imagesy($this->image);
         //Calc image ratios
         $img_r = $img_w / $img_h;
         $thumb_r = $thumb_w / $thumb_h;        
-        
+       
         if (( $options & self::IMAGE_CENTER ) && ( $options & self::IMAGE_TOUCH_OUTSIDE )) {
             $O_h = $img_h;
             $O_w = $img_w;
@@ -167,7 +167,7 @@ class Thumbnails {
             if ($img_r < $thumb_r) { //mov horizontal
                 $T_w = $thumb_h * $img_r;
                 $T_x = 0;
-                
+               
                 if (( $options & self::IMAGE_POS_RIGHT)) {
                     $T_x = $thumb_w - $T_w;
                 } else if (!( $options & self::IMAGE_POS_LEFT )) //center
@@ -175,7 +175,7 @@ class Thumbnails {
             } else { //mov vertical
                 $T_h = $thumb_w / $img_r;
                 $T_y = 0;
-                
+               
                 if (( $options & self::IMAGE_POS_BOTTOM)) {
                     $T_y = $thumb_h - $T_h;
                 } else if (!( $options & self::IMAGE_POS_TOP ))
@@ -203,8 +203,8 @@ class Thumbnails {
                         $O_x = ($img_w - $O_w);
                     } else if (!( $options & self::IMAGE_POS_LEFT )) //center
                         $O_x = ($img_w - $O_w) / 2;
-                }//x 
-
+                }//x
+ 
                 if ($O_h < $img_h) { //y
                     if (( $options & self::IMAGE_POS_BOTTOM)) {
                         $O_y = ($img_h - $O_h);
@@ -213,21 +213,30 @@ class Thumbnails {
                 }//y
             }//center
         }
-        
+       
         //Create blank image
         if ( $this->thumb)            
             imagedestroy ($this->thumb);
         $this->thumb = imagecreatetruecolor($thumb_w, $thumb_h);
-        
+       
+        /**
+         * Thanks to WaKeMaTTa! http://www.phpclasses.org/discuss/package/7899/thread/2/
+         */
+                if ($bg_color == NULL) {
+                        $bg_color = array('r' => 255, 'g' => 0, 'b' => 255);
+                        $transparent = imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']);
+                        imagecolortransparent($this->thumb, $transparent);
+                }
+               
         if ( is_array($bg_color)) {            
             imagefill($this->thumb, 0, 0, imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']));
         }
-        
+       
         //Copy and resize the Big image into Thumbnail
         //imagecopyresampled( $this->thumb, $this->image, 0, 0, $O_x, $O_y, $thumb_w, $thumb_h, $O_w, $O_h);        
         call_user_func($this->resize_method,$this->thumb, $this->image, $T_x, $T_y, $O_x, $O_y, $T_w, $T_h, $O_w, $O_h);        
-        
-        return $this;       
+       
+        return $this;      
     }
     
     /**
@@ -290,7 +299,8 @@ class Thumbnails {
      * @param type $format
      * @return type
      */
-    public function getThumbnailAsString ( $format = self::IMAGE_FORMAT_PNG){
+    //public function getThumbnailAsString ( $format = self::IMAGE_FORMAT_PNG){
+    public function getThumbnailAsString ( $format = 'auto'){
         ob_start();
         $this->printThumbnail( $format);
         return ob_get_clean();
@@ -319,7 +329,8 @@ class Thumbnails {
      * 
      * @param string $format Format to use for generate the thumbnail
      */
-    public function printThumbnail( $format = self::IMAGE_FORMAT_PNG) {
+    //public function printThumbnail( $format = self::IMAGE_FORMAT_PNG) {
+    public function printThumbnail( $format = 'auto') {
         $this->save( NULL, $format);
     }
     
