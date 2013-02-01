@@ -230,10 +230,23 @@ class Thumbnails {
                         imagecolortransparent($this->thumb, $transparent);
                 }
                
-        if ( is_array($bg_color)) {            
+        /* Deprecated: Remove in next future: if ( is_array($bg_color)) {            
             imagefill($this->thumb, 0, 0, imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']));
+        } */
+        
+        if ( null !== $bg_color )
+        {
+            // Set background color
+            imagefill( $this->thumb, 
+                       //X,Y Values where start fill operation 
+                       0, //X: 
+                       0, //Y: 
+                       self::getColor(  $bg_color, // Color
+                                        $this->thumb //Image for color allocate
+                                        )
+                    );
         }
-       
+                
         //Copy and resize the Big image into Thumbnail
         //imagecopyresampled( $this->thumb, $this->image, 0, 0, $O_x, $O_y, $thumb_w, $thumb_h, $O_w, $O_h);        
         call_user_func($this->resize_method,$this->thumb, $this->image, $T_x, $T_y, $O_x, $O_y, $T_w, $T_h, $O_w, $O_h);        
@@ -401,7 +414,7 @@ class Thumbnails {
     /**
      * Use for allocate color in image
      * 
-     * @param mixed Array RGB Color, hex Color or Name of color
+     * @param mixed Array RGB, Hex or Name of color
      * @param GdImage $image
      * @return int
      */
