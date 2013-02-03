@@ -4,91 +4,256 @@
  * Create thumbnails for a given image.
  *
  * @author Carlos Sosa
- * @version 1.0 
- * 
- * @method Thumbnails   saveAsPng           ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsJpeg          ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsJpg           ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsGif           ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsGd            ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsGd2           ( $imagePath)   Save thumbnail as png into path
- * @method Thumbnails   saveAsXbm           ( $imagePath)   Save thumbnail as png into path
- * @method null         printThumbnailAsPng ()              Print thumbnail as png
- * @method null         printThumbnailAsJpeg()              Print thumbnail as jpg
- * @method null         printThumbnailAsJpg ()              Print thumbnail as jpeg
- * @method null         printThumbnailAsGif ()              Print thumbnail as gif
- * @method null         printThumbnailAsGd  ()              Print thumbnail as gd
- * @method null         printThumbnailAsGd2 ()              Print thumbnail as gd2
- * @method null         printThumbnailAsXbm ()              Print thumbnail as xbm
+ * @version 1.2 
  */
 class Thumbnails {      
     //Position of selection in Original Image
+    /**
+     * Strech image to the new size.
+     */
     const IMAGE_STRETCH = 1;
+    /**
+     * Preserve aspect ratio
+     */
     const IMAGE_CENTER = 2;
     const IMAGE_POS_TOP = 4;
     const IMAGE_POS_BOTTOM = 8;
     const IMAGE_POS_LEFT = 16;
     const IMAGE_POS_RIGHT = 32;
-    const IMAGE_TOUCH_OUTSIDE = 64;
+    /**
+     * Preserve aspect ratio and adjust into the boudary of new size
+     */
+    const IMAGE_TOUCH_OUTSIDE = 64;        
     
-    //Method to use for resize
-    const RESIZE_RESIZE = 'imagecopyresized';
-    const RESIZE_RESAMPLING = 'imagecopyresampled';
+    //Format
+    /**
+     * Using embed Exif functions.
+     */
+    const IMAGE_FORMAT_AUTO_EXIF = 1024;
+    /**
+     * Using getimagesize function
+     */
+    const IMAGE_FORMAT_AUTO_GETIMAGESIZE  = 256;
+    /**
+     * Detect using the filename extension.
+     */
+    const IMAGE_FORMAT_AUTO_EXTENSION = 512;
+    /**
+     * Experimental!!!
+     */
+    const IMAGE_FORMAT_AUTO_HEADER = 2048;
+    /**
+     * Experimental!!!
+     */
+    const IMAGE_FORMAT_AUTO_STRING = 4096;
+    //types
+    const IMAGE_FORMAT_JPEG = 2;
+    const IMAGE_FORMAT_PNG = 3;
+    const IMAGE_FORMAT_GIF = 1;   
     
-    //Supported formats (GD 1.8 & PHP 5.4.4)
-    const IMAGE_FORMAT_JPEG = 'jpeg';
-    const IMAGE_FORMAT_PNG = 'png';
-    const IMAGE_FORMAT_GIF = 'gif';
-    const IMAGE_FORMAT_GD = 'gd';
-    const IMAGE_FORMAT_GD2 = 'gd2';
-    const IMAGE_FORMAT_XBM = 'xbm';
+    //save options
+    const SAVE_Q_HIGH = 128;
+    const SAVE_Q_MED = 256;
+    const SAVE_Q_LOW = 384; 
+
+    //prints options
+    const STRING_BASE64ENC = 512;
     
-    //Image
+    //resize opt
+    protected $resize_function = 'imagecopyresampled';
+
+    //Support Formats
+    protected $formats = array (
+      self::IMAGE_FORMAT_GIF => 'gif',  
+      self::IMAGE_FORMAT_JPEG => 'jpeg',  
+      self::IMAGE_FORMAT_PNG => 'png',  
+    );
+    
+    //Vars
+    protected $img_type;
+    protected $img_w;
+    protected $img_h;
     protected $image;
+    protected $img_path;
+    
     //Thumb
     protected $thumb;
     protected $thumb_options;
-    //Method of resize
-    protected $resize_method;
-
+    
     /**
      * Create instance of Thumbnails
      * 
-     * @param string $imagePath         Path to image (any path supported by fopen)
-     * @param string $format            Force to use specific format to load the image, by default is 'auto' for try autodetect format by extension.
-     * @param string $resize_function   Set the function to resize.
-     * @throws Thumbnails_Exception_FileNotFound
+     * @param type $pathToImg Path to image file or string of image (for this case you need pass IMAGE_FORMAT_AUTO_STRING in $format parameter).
+     * @param type $format Format of image or method to to autodetect
      * @throws Thumbnails_Exception_FormatNotSupported
-     * @throws Thumbnails_Exception_ErrorToLoad
      */
-    public function __construct ( $imagePath, $format = 'auto', $resize_function = self::RESIZE_RESAMPLING) {
-        //Verify exists
-        if ( !file_exists( $imagePath))
-            throw new Thumbnails_Exception_FileNotFound($imagePath);
-               
-        //prepare the extension
-        $ext = ( strtolower($format) != 'auto' ) ? strtolower($format) : 
-                                                    strtolower(pathinfo($imagePath, PATHINFO_EXTENSION));
-        $ext = ( $ext == 'jpg' ) ? self::IMAGE_FORMAT_JPEG : $ext;
+    public function __construct( $pathToImg, $format = self::IMAGE_FORMAT_AUTO_GETIMAGESIZE) {
+        //detect type
+        if ( in_array($format, array_keys($this->formats)) )
+            $this->img_type = $format;
+        else {
+            $format = self::detectType($pathToImg, $format);
+            if (in_array($format, array_keys($this->formats)))
+                $this->img_type = $format;
+            else 
+                throw new Thumbnails_Exception_FormatNotSupported();            
+        } 
+                
+        //image load
+        if ( $format == self::IMAGE_FORMAT_AUTO_STRING)
+            $this->imageLoadString($pathToImg);
+        else
+            $this->imageLoad($pathToImg);
+    }  
+    
+    /**
+     * Load image from file.
+     * 
+     * @param type $path
+     * @return type
+     * @throws ImageSmart_Exception_FileNotFound
+     * @throws ImageSmart_Exception_ErrorImagenLoad
+     */
+    protected function imageLoad ( $path) {
+        //function of load
+        $loadFunc = "imagecreatefrom{$this->formats[$this->img_type]}";
         
-        $func = 'imagecreatefrom'.$ext;
-      
-        if ( ! function_exists($func))
-        {
-            throw new Thumbnails_Exception_FormatNotSupported($ext);
-        }
+        //check file
+        if ( !file_exists($path) || !is_readable($path))
+            throw new Thumbnails_Exception_FileNotFound($path);
         
-        //Load image
-        $this->image = $func($imagePath);
+        //loadImg
+        $this->image = $loadFunc($path);
         
-        //Check if loaded
         if ( !is_resource($this->image))
-            throw new Thumbnails_Exception_ErrorToLoad($imagePath);
+            throw new Thumbnails_Exception_ErrorToLoad($path);
         
-        $this->thumb_options = NULL;  
-        $this->setMethodToResize($resize_function);
+        $this->img_path = $path;
+        $this->imageLoadDimensions();
+        
+        return ;
     }
     
+    /**
+     * Load image from var.
+     * 
+     * @param string $str
+     * @return type
+     * @throws ImageSmart_Exception_ErrorImagenLoad
+     */
+    protected function imageLoadString ( $str) {
+        $this->image = imagecreatefromstring($str);
+        
+        if ( !is_resource($this->image))
+            throw new ImageSmart_Exception_ErrorImagenLoad('image into a string');
+        
+        $this->img_path = NULL;
+        $this->imageLoadDimensions();
+        
+        return ;
+    }    
+    
+    /**
+     * Load dimensions from loaded image.
+     */
+    protected function imageLoadDimensions () {
+        $this->img_w = imagesx($this->image);
+        $this->img_h = imagesy($this->image);
+    }
+
+    /**
+     * 
+     * @param type $path
+     * @param type $method
+     * @return int
+     */
+    public static function detectType ( $path, $method){
+        if (is_callable($method)) {
+                $format = call_user_func($method, $path);
+        } else
+            switch ($method) {
+                case self::IMAGE_FORMAT_AUTO_EXIF:
+                    $format = self::_detectTypeByExif($path);
+                    break;
+                case self::IMAGE_FORMAT_AUTO_EXTENSION:
+                    $format = self::_detectTypeByExtension($path);
+                    break;
+                case self::IMAGE_FORMAT_AUTO_STRING:
+                    $format = self::_detectTypeByGetImagenSizeString($path);
+                    break;
+                case self::IMAGE_FORMAT_AUTO_GETIMAGESIZE:
+                    $format = self::_detectTypeByGetImagenSize($path);
+                    break;
+                case self::IMAGE_FORMAT_AUTO_HEADER:
+                    $format = self::_detectTypeByHeader($path);
+                    break;
+                default:
+                    break;
+            }
+        return $format;
+    }
+    
+    /**
+     * @see detectType()
+     * {@link detectType()}
+     */
+    protected static function _detectTypeByExif ( $path) {
+        //Verify Exif
+        if ( !function_exists( !exif_imagetype( $path)))
+            throw new ImageSmart_Exception_ExifNotFound();
+        
+        return exif_imagetype( $path);
+    }
+    
+    /**
+     * @see detectType()
+     * {@link detectType()}
+     */
+    protected static function _detectTypeByGetImagenSizeString ( $path) {
+        $data = getimagesizefromstring($path);
+        return $data[2];
+    }
+    
+    /**
+     * @see detectType()
+     * {@link detectType()}
+     */
+    protected static function _detectTypeByGetImagenSize ( $path) {
+        $data = getimagesize($path);
+        return $data[2];
+    }
+    
+    /**
+     * @see detectType()
+     * {@link detectType()}
+     */
+    protected static function _detectTypeByExtension ( $path) {       
+        switch ('.'.strtolower( pathinfo( $path, PATHINFO_EXTENSION))) {
+            case image_type_to_extension(self::IMAGE_FORMAT_JPEG):
+            case '.jpg': return self::IMAGE_FORMAT_JPEG;
+                break;
+            case image_type_to_extension(self::IMAGE_FORMAT_GIF): return self::IMAGE_FORMAT_GIF;
+                break;
+            case image_type_to_extension(self::IMAGE_FORMAT_PNG): return self::IMAGE_FORMAT_PNG;
+                break;
+            default: return -1;
+                break;
+        }
+    }
+    
+    /**
+     * Experimental!
+     * 
+     * @see detectType()
+     * {@link detectType()}
+     */
+    protected static function _detectTypeByHeader ( $path) {
+        //todo
+    }
+
+    /**
+     * Free resources.
+     */
     public function __destruct() {
         imagedestroy($this->image);
         if ( is_resource($this->thumb) )
@@ -112,7 +277,6 @@ class Thumbnails {
      * ?>
      * </code></pre>
      * 
-     * 
      * @param type $options     Position of selection in Original Image
      * @return \Thumbnails
      */
@@ -128,11 +292,11 @@ class Thumbnails {
      * @return \Thumbnails
      * @throws Thumbnails_Exception_NotCallableMethod
      */
-    public function setMethodToResize( $method = self::RESIZE_RESAMPLING) {
+    public function setMethodToResize( $method) {
         if (!is_callable($method))
             throw new Thumbnails_Exception_NotCallableMethod($method);
             
-        $this->resize_method = $method;        
+        $this->resize_function = $method;        
         return $this;
     }
 
@@ -151,11 +315,11 @@ class Thumbnails {
             $options = $this->thumb_options;
        
         //Img sizes
-        $img_w = imagesx($this->image);
-        $img_h = imagesy($this->image);
+        $img_w = $this->width();
+        $img_h = $this->height();
         //Calc image ratios
-        $img_r = $img_w / $img_h;
-        if ($thumb_h == 'auto') { $thumb_h = $thumb_w / $img_r; } //thumbnail height proportional
+        $img_r = $this->ratio();           
+        if ($thumb_h == 'auto' || $thumb_h == NULL) { $thumb_h = $thumb_w / $img_r; } //thumbnail height proportional
         $thumb_r = $thumb_w / $thumb_h;        
        
         if (( $options & self::IMAGE_CENTER ) && ( $options & self::IMAGE_TOUCH_OUTSIDE )) {
@@ -220,14 +384,16 @@ class Thumbnails {
             imagedestroy ($this->thumb);
         $this->thumb = imagecreatetruecolor($thumb_w, $thumb_h);
        
-        //TODO: Usar metodo getColor para asignar color.
         /**
          * Thanks to WaKeMaTTa! http://www.phpclasses.org/discuss/package/7899/thread/2/
          */
                 if ($bg_color == NULL) {
-                        $bg_color = array('r' => 255, 'g' => 255, 'b' => 255);
-                        $transparent = imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']);
-                        imagecolortransparent($this->thumb, $transparent);
+                        //$bg_color = array('r' => 255, 'g' => 255, 'b' => 255);                       
+                        //$transparent = imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']);
+                        imagecolortransparent($this->thumb, 
+                                                self::getColor(  'black', // Color
+                                                                 $this->thumb //Image for color allocate
+                                                ));
                 }
                
         /* Deprecated: Remove in next future: if ( is_array($bg_color)) {            
@@ -249,115 +415,9 @@ class Thumbnails {
                 
         //Copy and resize the Big image into Thumbnail
         //imagecopyresampled( $this->thumb, $this->image, 0, 0, $O_x, $O_y, $thumb_w, $thumb_h, $O_w, $O_h);        
-        call_user_func($this->resize_method,$this->thumb, $this->image, $T_x, $T_y, $O_x, $O_y, $T_w, $T_h, $O_w, $O_h);        
+        call_user_func($this->resize_function,$this->thumb, $this->image, $T_x, $T_y, $O_x, $O_y, $T_w, $T_h, $O_w, $O_h);        
        
         return $this;      
-    }
-    
-    /**
-     * Save thumbnail
-     * 
-     * Example:
-     * <pre><code>
-     * <?php
-     *   $obj = new Thumbnails("/var/www/image.jpg");
-     *   $obj->doThumbnail(60, 60, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_POS_TOP | Thumbnails::IMAGE_POS_RIGHT)
-     *       ->saveAsJpeg("/var/www/image_thumb.jpg")
-     * ?>
-     * </code></pre>
-     * 
-     * @param type $path
-     * @param type $format
-     * @throws Thumbnails_Exception_FileNotFound
-     * @throws Thumbnails_Exception_FormatNotSupported
-     */
-    public function save( $path, $format='auto', $overwrite = true) {
-        //prepare the extension
-        $ext = ( strtolower($format) != 'auto' ) ? strtolower($format) : 
-                                                    strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        $ext = ( $ext == 'jpg' ) ? self::IMAGE_FORMAT_JPEG : $ext;
-        
-        $func = 'image'.$ext;
-        
-        if ( ! function_exists($func))
-        {
-            throw new Thumbnails_Exception_FormatNotSupported($ext);
-        }
-        
-        if ( file_exists( $path) && $overwrite == false)
-            return $this;
-        else if ( file_exists( $path) ) {
-            unlink($path);
-        }
-        
-        //Save thumbnail
-        $func($this->thumb,$path);
-        
-        return $this;
-    }
-    
-    /**
-     * getThumbnailAsString 
-     * Store thumbnails into string
-     * 
-     * Example:
-     * <pre><code>
-     * <?php
-     *   $obj = new Thumbnails("/var/www/image.jpg");
-     *   $obj->doThumbnail(60, 60);
-     *   
-     *   echo "My image thumbnail : ";
-     *   echo '<img src="data:image/png;base64,'. base64_encode($obj->getThumbnailAsString(Thumbnails::IMAGE_FORMAT_PNG)) .'">';
-     * ?>
-     * </code></pre>
-     * 
-     * @param type $format
-     * @return type
-     */
-    //public function getThumbnailAsString ( $format = self::IMAGE_FORMAT_PNG){
-    public function getThumbnailAsString ( $format = 'auto'){
-        ob_start();
-        $this->printThumbnail( $format);
-        return ob_get_clean();
-    }
-    
-    /**
-     * printThumbnail
-     * 
-     * Example:
-     * <pre><code>
-     * <?php
-     *   $obj = new Thumbnails("/var/www/image.jpg");
-     *   $obj->doThumbnail(60, 60);
-     *   
-     *   header("Pragma: public"); 
-     *   header('Content-disposition: filename=image_thumb.png'); 
-     *   header("Content-type: image/png"); 
-     *   header('Content-Transfer-Encoding: binary'); 
-     *   ob_clean(); 
-     *   flush(); 
-     *   //You can used simplified method
-     *   //or $obj->printThumbnail(Thumbnails::IMAGE_FORMAT_PNG);
-     *   $obj->printThumbnailAsPng();
-     * ?>
-     * </code></pre>
-     * 
-     * @param string $format Format to use for generate the thumbnail
-     */
-    //public function printThumbnail( $format = self::IMAGE_FORMAT_PNG) {
-    public function printThumbnail( $format = 'auto') {
-        $this->save( NULL, $format);
-    }
-    
-    /**
-     * @ignore
-     */
-    public function __call($name, $arguments) {        
-        if (substr($name, 0, 6) == 'saveAs'){
-            call_user_func( array($this,'save'), $arguments[0], strtolower(substr($name, 6)));
-        } else if (substr($name, 0, 16) == 'printThumbnailAs'){
-            call_user_func( array($this,'printThumbnail'), strtolower(substr($name, 16)));
-        }
     }
 
     /**
@@ -430,7 +490,7 @@ class Thumbnails {
             'violet' => '7B00FF',   'pink' => 'F0F',
         );
         
-        if (in_array($str, $colors))
+        if (array_key_exists($str, $colors))
         {
             return self::getColor($colors[$str], $image);
         }
@@ -442,7 +502,7 @@ class Thumbnails {
         } else {
             $_match = array();
             if ( preg_match('#^([a-fA-F0-9]{1})([a-fA-F0-9]{1})([a-fA-F0-9]{1})$#', trim($str,' #'), $_match) ) {
-                    $_match[1] .= $_match[1];$_match[2] .= $_match[2];$_match[3] .= $_match[2];
+                    $_match[1] .= $_match[1];$_match[2] .= $_match[2];$_match[3] .= $_match[3];
                     $color = array( base_convert($_match[1],16,10), base_convert($_match[2],16,10), base_convert($_match[3],16,10));
             } elseif ( preg_match('#^([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$#', trim($str,' #'), $_match) ) {
                     $color = array( base_convert($_match[1],16,10), base_convert($_match[2],16,10), base_convert($_match[3],16,10));
@@ -450,6 +510,224 @@ class Thumbnails {
         }
         array_unshift( $color, $image);
         return call_user_func_array($func, $color);
+    }
+    
+    /**
+     * Get image resource id.
+     * @return Resource Id
+     */
+    public function getImageResource ()
+    {
+        return $this->image;
+    }
+    
+    /**
+     * Get image resource id.
+     * @return Resource Id
+     */
+    public function getThumbnailResource ()
+    {
+        if (is_resource($this->thumb))
+            return $this->thumb;
+        else   
+            return false;
+    }
+    
+    /**
+     * Get width size of image.
+     * @return integer
+     */
+    public function width() {
+        return $this->img_w;
+    }
+    
+    /**
+     * Get height size of image
+     * @return integer
+     */
+    public function height() {
+        return $this->img_h;
+    }
+    
+    /**
+     * Ratio of image
+     * @return integer
+     */
+    public function ratio ()
+    {
+        return $this->width()/$this->height();
+    }
+
+    /**
+     * @see width()
+     */
+    public function getWidth() { return $this->width(); }
+    /**
+     * @see height()
+     */
+    public function getHeight() { return $this->height(); }
+    /**
+     * @see ratio()
+     */
+    public function getRatio() { return $this->ratio(); }
+
+    /**
+     * Save generated thumbnail into file.
+     * 
+     * Example:
+     * <pre><code>
+     * <?php
+     *   $obj = new Thumbnails("/var/www/image.jpg");
+     *   $obj->doThumbnail(60, null, Thumbnails::IMAGE_CENTER | Thumbnails::IMAGE_TOUCH_OUTSIDE)
+     *       ->saveAs("/var/www/image_thumb.jpg", Thumbnails::IMAGE_FORMAT_JPEG);
+     * ?>
+     * </code></pre>
+     * 
+     * @param string $path
+     * @param int $format
+     * @param int $options
+     * @return \Thumbnails
+     */
+    public function saveAs ( $path, $format = NULL, $options = NULL)
+    {
+        //check path
+        if ( ($path !== NULL) && ( !file_exists($path) || !is_readable($path)) )
+            throw new Thumbnails_Exception_FileNotFound($path);
+                
+        //set the format to use
+        $format = ($format) ?:$this->img_type;      
+        
+        //prepare function and arguments
+        $func = "image{$this->formats[$format]}";           
+        $args = array( $this->thumb, $path);
+        
+        //Set quality
+        $qlty = $this->qualityByFormat($format,$options);
+        if ( $qlty) $args[] = $qlty;
+        
+        //call function
+        call_user_func_array($func, $args);
+        
+        return $this;
+    }    
+    
+    /**
+     * Alias of saveAs
+     * @see saveAs
+     */
+    public function save () {
+        return call_user_func_array(array($this,'saveAs'), func_get_args());
+    }
+
+    /**
+     * Print image to output
+     * 
+     * Example:
+     * <pre><code>
+     * <?php
+     *   $obj = new Thumbnails("/var/www/image.jpg");
+     *   $obj->doThumbnail(60, 60);
+     *   
+     *   header("Pragma: public"); 
+     *   header('Content-disposition: filename=image_thumb.png'); 
+     *   header("Content-type: image/png"); 
+     *   header('Content-Transfer-Encoding: binary'); 
+     *   ob_clean(); 
+     *   flush(); 
+     *   $obj->printThumbnail(Thumbnails::IMAGE_FORMAT_PNG);
+     * ?>
+     * </code></pre>
+     * 
+     * @param type $format
+     * @param type $options
+     * @return \Thumbnails
+     */
+    public function printImage( $format = NULL, $options = NULL)
+    {
+        $this->saveAs( NULL, $format, $options);
+        
+        return $this;
+    }
+    
+    /**
+     * Alias of printImage
+     * @see printImage
+     * @deprecated
+     */
+    public function printThumbnail () {
+        return call_user_func_array(array($this,'printImage'), func_get_args());
+    }
+        
+    /**
+     * getAsString
+     * Store thumbnails into string
+     * 
+     * Example:
+     * <pre><code>
+     * <?php
+     *   $obj = new Thumbnails("/var/www/image.jpg");
+     *   $obj->doThumbnail(60, 60);
+     *   
+     *   echo "My image thumbnail : ";
+     *   echo '<img src="data:image/png;base64,'. $obj->getAsString(Thumbnails::IMAGE_FORMAT_PNG,Thumbnails::STRING_BASE64ENC) .'">';
+     * ?>
+     * </code></pre>
+     * 
+     * @param type $format
+     * @param type $options
+     * @return type
+     */
+    public function getAsString( $format = NULL, $options = NULL) {
+        ob_start();
+        $this->printImage($format, $options);
+        $string = ob_get_clean();
+        
+        //return string
+        if ( $options & self::STRING_BASE64ENC) //if want encoded with b64
+            return base64_encode($string);
+        else return $string; //raw string of image
+    }
+    
+    /**
+     * Alias of getAsString
+     * @see getAsString
+     * @deprecated
+     */
+    public function getThumbnailAsString () {
+        return call_user_func_array(array($this,'getAsString'), func_get_args());
+    }
+
+    /**
+     * @internal Determine quality of image by format.
+     * @param type $format
+     * @param type $options
+     * @return boolean
+     */
+    protected function qualityByFormat( $format = NULL, $options = self::SAVE_Q_HIGH)
+    {
+        $quality = 'H';
+        if ( $options & self::SAVE_Q_HIGH) $quality = 'H';
+        if ( $options & self::SAVE_Q_MED) $quality = 'M';
+        if ( $options & self::SAVE_Q_LOW) $quality = 'L';
+        
+        $_quality[self::IMAGE_FORMAT_JPEG] = array (
+            'H' => 100,
+            'M' => 75,
+            'L' => 50,
+        );
+        $_quality[self::IMAGE_FORMAT_PNG] = array (
+            'H' => 9,
+            'M' => 6,
+            'L' => 4,
+        );
+        
+        if (array_key_exists($format, $_quality) && $quality !== false ) {
+            $r = $_quality[$format][$quality];
+        } else {
+            $r = false;
+        }
+        
+        return $r;
     }
 }
 
@@ -460,8 +738,8 @@ final class Thumbnails_Exception_FileNotFound extends Exception {
 }
 
 final class Thumbnails_Exception_FormatNotSupported extends Exception {
-    public function __construct ($format){
-        parent::__construct( "Format {$format} isn't supported by PHP.", 10002);
+    public function __construct (){
+        parent::__construct( "Format not supported.", 10002);
     }
 }
 
