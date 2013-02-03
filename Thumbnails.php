@@ -225,7 +225,7 @@ class Thumbnails {
          * Thanks to WaKeMaTTa! http://www.phpclasses.org/discuss/package/7899/thread/2/
          */
                 if ($bg_color == NULL) {
-                        $bg_color = array('r' => 255, 'g' => 0, 'b' => 255);
+                        $bg_color = array('r' => 255, 'g' => 255, 'b' => 255);
                         $transparent = imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']);
                         imagecolortransparent($this->thumb, $transparent);
                 }
