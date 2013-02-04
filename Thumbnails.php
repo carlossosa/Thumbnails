@@ -83,16 +83,19 @@ class Thumbnails {
     /**
      * Create instance of Thumbnails
      * 
-     * @param type $pathToImg Path to image file or string of image (for this case you need pass IMAGE_FORMAT_AUTO_STRING in $format parameter).
+     * @param type $pathToImg Path to image file or string of image (for this case you need pass IMAGE_FORMAT_AUTO_STRING in $format parameter and PHP 5.4).
      * @param type $format Format of image or method to to autodetect
      * @throws Thumbnails_Exception_FormatNotSupported
      */
     public function __construct( $pathToImg, $format = self::IMAGE_FORMAT_AUTO_GETIMAGESIZE) {
+        if ( ($format !== self::IMAGE_FORMAT_AUTO_STRING) && ( !file_exists($pathToImg) || !is_readable($pathToImg)) )
+            throw new Thumbnails_Exception_FileNotFound($pathToImg);
         //detect type
         if ( in_array($format, array_keys($this->formats)) )
             $this->img_type = $format;
         else {
             $format = self::detectType($pathToImg, $format);
+            
             if (in_array($format, array_keys($this->formats)))
                 $this->img_type = $format;
             else 
@@ -199,8 +202,8 @@ class Thumbnails {
      */
     protected static function _detectTypeByExif ( $path) {
         //Verify Exif
-        if ( !function_exists( !exif_imagetype( $path)))
-            throw new ImageSmart_Exception_ExifNotFound();
+        if ( !function_exists( 'exif_imagetype') )
+            throw new Thumbnails_Exception_NotCallableMethod('exif_imagetype');
         
         return exif_imagetype( $path);
     }
@@ -210,6 +213,9 @@ class Thumbnails {
      * {@link detectType()}
      */
     protected static function _detectTypeByGetImagenSizeString ( $path) {
+        if ( !function_exists('getimagesizefromstring'))
+            throw new Thumbnails_Exception_NotCallableMethod('getimagesizefromstring');
+
         $data = getimagesizefromstring($path);
         return $data[2];
     }
@@ -390,10 +396,11 @@ class Thumbnails {
                 if ($bg_color == NULL) {
                         //$bg_color = array('r' => 255, 'g' => 255, 'b' => 255);                       
                         //$transparent = imagecolorallocate($this->thumb, $bg_color['r'], $bg_color['g'], $bg_color['b']);
-                        imagecolortransparent($this->thumb, 
-                                                self::getColor(  'black', // Color
+                        imagefill($this->thumb, 0, 0, self::getColor( 'FEFEFE', $this->thumb)); 
+                        imagecolortransparent($this->thumb,
+                                                self::getColor(  'FEFEFE', // Color
                                                                  $this->thumb //Image for color allocate
-                                                ));
+                                                )); 
                 }
                
         /* Deprecated: Remove in next future: if ( is_array($bg_color)) {            
@@ -589,11 +596,7 @@ class Thumbnails {
      * @return \Thumbnails
      */
     public function saveAs ( $path, $format = NULL, $options = NULL)
-    {
-        //check path
-        if ( ($path !== NULL) && ( !file_exists($path) || !is_readable($path)) )
-            throw new Thumbnails_Exception_FileNotFound($path);
-                
+    {               
         //set the format to use
         $format = ($format) ?:$this->img_type;      
         
